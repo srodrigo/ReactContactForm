@@ -21,7 +21,20 @@ export const ContactForm = React.createClass({
 
   handleSubmitFunc: function (e) {
     e.preventDefault()
-    console.log('submit!!!')
+
+    function makeRequest(url) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          console.log(xhr.responseText)
+        }
+      };
+      xhr.send()
+    }
+
+    const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
+    makeRequest(url)
   },
 
   render: function () {
