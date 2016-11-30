@@ -1,21 +1,32 @@
-import React from 'react'
-import {ContactItem, ContactForm } from './Form'
+const React = require('react')
 
-module.exports = function (contacts) {
-  const contactsElements =
-    contacts
-      .filter(function (contact) {
-        return contact.email
-      })
-      .map(function (contact) {
-        return React.createElement(ContactItem, contact)
-      })
+const ContactDiv = React.createClass({
+  propTypes: {
+    handleSubmit: React.PropTypes.func.isRequired
+  },
+  render: function () {
+    return React.createElement('div', {},
+      React.createElement('input', {type: 'text', placeholder: 'Name'}),
+      React.createElement('input', {type: 'text', placeholder: 'E-mail'}),
+      React.createElement('textarea', {type: 'text', placeholder: 'Description'}),
+      React.createElement('button', {type: 'submit', onClick: this.props.handleSubmit}, "Submit")
+    )
+  }
+})
 
-  const newContactDefaultValues = {name: "", email: "", description: ""}
+export const ContactForm = React.createClass({
+  propTypes: {
+    contact: React.PropTypes.object.isRequired
+  },
 
-  return React.createElement('div', {},
-    React.createElement('h1', {}, 'Contacts'),
-    React.createElement('ul', {}, contactsElements),
-    React.createElement(ContactForm, {contact: newContactDefaultValues})
-  )
-}
+  handleSubmitFunc: function (e) {
+    e.preventDefault()
+    console.log('submit!!!')
+  },
+
+  render: function () {
+    return React.createElement('form', {},
+      React.createElement(ContactDiv, {handleSubmit: this.handleSubmitFunc})
+    )
+  }
+})

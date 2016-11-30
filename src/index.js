@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ContactForm from './ContactForm'
+import ContactForm from './ContactFormController'
 import './index.css'
 
 const contacts = [
