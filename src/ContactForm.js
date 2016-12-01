@@ -16,30 +16,13 @@ const ContactDiv = React.createClass({
 
 export const ContactForm = React.createClass({
   propTypes: {
-    contact: React.PropTypes.object.isRequired
-  },
-
-  handleSubmitFunc: function (e) {
-    e.preventDefault()
-
-    function makeRequest(url) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-          console.log(xhr.responseText)
-        }
-      };
-      xhr.send()
-    }
-
-    const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
-    makeRequest(url)
+    contact: React.PropTypes.object,
+    handleSubmit: React.PropTypes.func
   },
 
   render: function () {
     return React.createElement('form', {},
-      React.createElement(ContactDiv, {handleSubmit: this.handleSubmitFunc})
+      React.createElement(ContactDiv, {handleSubmit: this.props.handleSubmit})
     )
   }
 })

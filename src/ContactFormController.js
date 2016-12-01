@@ -20,6 +20,24 @@ module.exports = function (contacts) {
   return React.createElement('div', {},
     React.createElement('h1', {}, 'Contacts'),
     React.createElement('ul', {}, contactsElements),
-    React.createElement(ContactForm, {contact: newContactDefaultValues})
+    React.createElement(ContactForm, {contact: newContactDefaultValues, handleSubmit: saveContact})
   )
+
+  function saveContact (e) {
+    e.preventDefault()
+
+    function makeRequest(url) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+          console.log(xhr.responseText)
+        }
+      };
+      xhr.send()
+    }
+
+    const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
+    makeRequest(url)
+  }
 }
