@@ -1,19 +1,5 @@
 const React = require('react')
 
-const ContactDiv = React.createClass({
-  propTypes: {
-    handleSubmit: React.PropTypes.func.isRequired
-  },
-  render: function () {
-    return React.createElement('div', {},
-      React.createElement('input', {type: 'text', placeholder: 'Name'}),
-      React.createElement('input', {type: 'text', placeholder: 'E-mail'}),
-      React.createElement('textarea', {type: 'text', placeholder: 'Description'}),
-      React.createElement('button', {type: 'submit', onClick: this.props.handleSubmit}, "Submit")
-    )
-  }
-})
-
 export const ContactForm = React.createClass({
   propTypes: {
     contact: React.PropTypes.object,
@@ -22,12 +8,23 @@ export const ContactForm = React.createClass({
 
   handleSubmitClick (e) {
     e.preventDefault()
-    this.props.handleSubmit({name:"", email:"john@a.com", description:""})
+    this.props.handleSubmit({name:"", email: this.state.email, description:""})
+  },
+
+  getInitialState: function () {
+    return {name: "", email: "", description: ""}
   },
 
   render: function () {
     return React.createElement('form', {},
-      React.createElement(ContactDiv, {handleSubmit: this.handleSubmitClick})
+      React.createElement('input', {type: 'text', placeholder: 'Name', value: this.state.name, onChange: this.saveTo.bind(this, 'name')}),
+      React.createElement('input', {type: 'text', placeholder: 'E-mail', value: this.state.email, onChange: (e) => this.saveTo('email', e)}),
+      React.createElement('textarea', {type: 'text', placeholder: 'Description', value: this.state.description, onChange: this.saveTo.bind(this, 'description')}),
+      React.createElement('button', {type: 'submit', onClick: this.props.handleSubmit}, "Submit")
     )
+  },
+
+  saveTo: function (field, e) {
+    this.setState({[field]: e.target.value})
   }
 })
