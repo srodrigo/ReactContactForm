@@ -28,4 +28,27 @@ describe('ContactFormController', () => {
     expect(contactFormController).to.contain.text("james@a.com")
     expect(contactFormController).to.not.contain.text("bob@example.com")
   });
+
+
+  it('submitting a new contact, adds it to the list ', () => {
+    const contacts = [
+      {key: 1, name: "James Nelson", email: "james@a.com"}
+    ]
+    const contactFormController = mount(ContactFormController(contacts))
+
+    fillForm(contactFormController, "john", "john@a.com")
+    submitForm(contactFormController)
+
+    expect(contactFormController).to.contain.text("james@a.com")
+    expect(contactFormController).to.contain.text("john@a.com")
+
+    function fillForm(formController, name, email) {
+       formController.find('input').at(0).text = name
+       formController.find('input').at(1).text = email
+    }
+
+    function submitForm(formController) {
+      formController.find('button').simulate('click')
+    }
+  });
 });
