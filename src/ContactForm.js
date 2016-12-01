@@ -8,7 +8,7 @@ export const ContactForm = React.createClass({
 
   handleSubmitClick (e) {
     e.preventDefault()
-    this.props.handleSubmit({name:"", email: this.state.email, description:""})
+    this.props.handleSubmit({name: this.state.name, email: this.state.email, description: this.state.description})
   },
 
   getInitialState: function () {
@@ -20,7 +20,7 @@ export const ContactForm = React.createClass({
       React.createElement('input', {type: 'text', placeholder: 'Name', value: this.state.name, onChange: this.saveTo.bind(this, 'name')}),
       React.createElement('input', {type: 'text', placeholder: 'E-mail', value: this.state.email, onChange: (e) => this.saveTo('email', e)}),
       React.createElement('textarea', {type: 'text', placeholder: 'Description', value: this.state.description, onChange: this.saveTo.bind(this, 'description')}),
-      React.createElement('button', {type: 'submit', onClick: this.props.handleSubmit}, "Submit")
+      React.createElement('button', {type: 'submit', onClick: this.handleSubmitClick}, "Submit")
     )
   },
 

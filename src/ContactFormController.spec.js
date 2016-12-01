@@ -37,15 +37,20 @@ describe('ContactFormController', () => {
     ]
     const contactFormController = mount(React.createElement(ContactFormController, {contacts}))
 
-    fillForm(contactFormController, "john", "john@a.com")
+    fillForm(contactFormController, "joan", "john@a.com")
     submitForm(contactFormController)
 
+    expect(contactFormController).to.contain.text("James Nelson")
+    expect(contactFormController).to.contain.text("joan")
     expect(contactFormController).to.contain.text("james@a.com")
     expect(contactFormController).to.contain.text("john@a.com")
 
     function fillForm(formController, name, email) {
-       formController.find('input').at(0).text = name
-       formController.find('input').at(1).text = email
+      formController.find('input').at(0)
+        .simulate('change', {target: {value: name}})
+
+      formController.find('input').at(1)
+        .simulate('change', {target: {value: email}})
     }
 
     function submitForm(formController) {
