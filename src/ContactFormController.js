@@ -8,6 +8,9 @@ module.exports = function (contacts) {
       .filter(function (contact) {
         return contact.email
       })
+      .filter(function removeExampleCom(contact){
+        return !contact.email.includes("@example.com")
+      })
       .map(function (contact) {
         return React.createElement(ContactItem, contact)
       })
