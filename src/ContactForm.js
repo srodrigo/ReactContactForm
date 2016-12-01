@@ -20,9 +20,14 @@ export const ContactForm = React.createClass({
     handleSubmit: React.PropTypes.func
   },
 
+  handleSubmitClick (e) {
+    e.preventDefault()
+    this.props.handleSubmit({name:"", email:"john@a.com", description:""})
+  },
+
   render: function () {
     return React.createElement('form', {},
-      React.createElement(ContactDiv, {handleSubmit: this.props.handleSubmit})
+      React.createElement(ContactDiv, {handleSubmit: this.handleSubmitClick})
     )
   }
 })
