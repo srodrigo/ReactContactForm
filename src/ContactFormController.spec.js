@@ -17,4 +17,15 @@ describe('ContactFormController', () => {
     expect(contactFormController).to.contain.text("james@jamesknelson.com")
     expect(contactFormController).to.contain.text("alice.in.wonderland@whatever.com")
   });
+
+  it('does not show emails "@example.com"', () => {
+    const contacts = [
+      {key: 1, name: "James Nelson", email: "james@a.com"},
+      {key: 2, name: "Bob", email: "bob@example.com"}
+    ]
+    const contactFormController = mount(ContactFormController(contacts))
+
+    expect(contactFormController).to.contain.text("james@a.com")
+    expect(contactFormController).to.not.contain.text("bob@example.com")
+  });
 });
