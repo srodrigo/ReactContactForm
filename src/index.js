@@ -1,7 +1,5 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
-import ContactForm from './ContactFormController'
-import './index.css'
+import ContactFormController from './ContactFormController'
 
 const contacts = [
   {key: 1, name: "James Nelson", email: "james@jamesknelson.com", description: 'Big guy'},
@@ -10,6 +8,6 @@ const contacts = [
 ]
 
 ReactDOM.render(
-  ContactForm(contacts),
+  ContactFormController(contacts),
   document.getElementById('root')
 )
