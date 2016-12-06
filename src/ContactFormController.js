@@ -5,8 +5,11 @@ import { ContactForm } from './ContactForm'
 export const ContactFormController = React.createClass({
 
   propTypes: {
-    contacts: React.PropTypes.array.isRequired
+    contacts: React.PropTypes.array.isRequired,
+    httpClient: React.PropTypes.object.isRequired
   },
+
+  handleSubmit: saveContact,
 
   getInitialState () {
     return {
@@ -39,23 +42,27 @@ const contactsElements = function(contacts) {
 
 const newContactDefaultValues = {name: "", email: "", description: ""}
 
+const saveContact = function(formData) {
 
-function saveContact (formData) {
-  function makeRequest(url) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        console.log(xhr.responseText)
-      }
-    };
-    xhr.send()
-  }
+	var httpClient = this.props.httpClient;
+	var $this = this;
 
-  const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
-  makeRequest(url)
+	function makeRequest(urlData) {
+		httpClient.post(
+			{ 
+				url: urlData,
+				form: formData 
+			},
+			function (error, response, body) {
+				if (!error && response.statusCode == 200) {
+					const contacts = $this.state.contacts
+					contacts.push(formData)
+					$this.setState({contacts})
+				}
+			});
+	}
 
-  const contacts = this.state.contacts
-  contacts.push(formData)
-  this.setState({contacts})
+	const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
+	makeRequest(url)
+
 }

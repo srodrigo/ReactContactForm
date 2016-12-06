@@ -5,56 +5,93 @@ import chaiEnzyme from 'chai-enzyme'
 import { mount } from 'enzyme'
 chai.use(chaiEnzyme())
 const expect = chai.expect
+var nock = require('nock');
+var sinon = require('sinon');
+var request = require('request');
 
 describe('ContactFormController', () => {
-  it('renders ContactForm', () => {
-    const contacts = [
-      {key: 1, name: "James Nelson", email: "james@jamesknelson.com", description: 'Big guy'},
-      {key: 2, name: "Bob"},
-      {key: 3, name: "Alice", email: "alice.in.wonderland@whatever.com", description: 'Nice person'}
-    ]
-    const contactFormController = mount(React.createElement(ContactFormController, {contacts}))
 
-    expect(contactFormController).to.contain.text("james@jamesknelson.com")
-    expect(contactFormController).to.contain.text("alice.in.wonderland@whatever.com")
-  });
+	var httpClient;
 
-  it('does not show emails "@example.com"', () => {
-    const contacts = [
-      {key: 1, name: "James Nelson", email: "james@a.com"},
-      {key: 2, name: "Bob", email: "bob@example.com"}
-    ]
-    const contactFormController = mount(React.createElement(ContactFormController, {contacts}))
+	beforeEach(function() {
+		httpClient = {
+			post: sinon.spy()
+		}
+	});
 
-    expect(contactFormController).to.contain.text("james@a.com")
-    expect(contactFormController).to.not.contain.text("bob@example.com")
-  });
+	it('renders ContactForm', () => {
+		const contacts = [
+			{key: 1, name: "James Nelson", email: "james@jamesknelson.com", description: 'Big guy'},
+			{key: 2, name: "Bob"},
+			{key: 3, name: "Alice", email: "alice.in.wonderland@whatever.com", description: 'Nice person'}
+		]
+		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
 
+		expect(contactFormController).to.contain.text("james@jamesknelson.com")
+		expect(contactFormController).to.contain.text("alice.in.wonderland@whatever.com")
+	});
 
-  it('submitting a new contact, adds it to the list ', () => {
-    const contacts = [
-      {key: 1, name: "James Nelson", email: "james@a.com"}
-    ]
-    const contactFormController = mount(React.createElement(ContactFormController, {contacts}))
+	it('does not show emails "@example.com"', () => {
+		const contacts = [
+			{key: 1, name: "James Nelson", email: "james@a.com"},
+			{key: 2, name: "Bob", email: "bob@example.com"}
+		]
+		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
 
-    fillForm(contactFormController, "joan", "john@a.com")
-    submitForm(contactFormController)
+		expect(contactFormController).to.contain.text("james@a.com")
+		expect(contactFormController).to.not.contain.text("bob@example.com")
+	});
 
-    expect(contactFormController).to.contain.text("James Nelson")
-    expect(contactFormController).to.contain.text("joan")
-    expect(contactFormController).to.contain.text("james@a.com")
-    expect(contactFormController).to.contain.text("john@a.com")
+	it('send the contact to the backend when submitting a new contact', () => {
+		const contacts = [
+			{key: 1, name: "James Nelson", email: "james@a.com"}
+		]
+		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
 
-    function fillForm(formController, name, email) {
-      formController.find('input').at(0)
-        .simulate('change', {target: {value: name}})
+		fillForm(contactFormController, "joan", "john@a.com")
+		submitForm(contactFormController)
 
-      formController.find('input').at(1)
-        .simulate('change', {target: {value: email}})
-    }
+		const contact = { description: "", email: "john@a.com", name: "joan" }
+		var expected = {
+			url : 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123',
+			form: contact
+		};
+		expect(httpClient.post.calledOnce).to.be.true;
+		sinon.assert.calledWith(httpClient.post, expected);
+	});
 
-    function submitForm(formController) {
-      formController.find('button').simulate('click')
-    }
-  });
+	it('adds the contact to the list when submitting a new contact response is successful', (done) => {
+		const contact = { name: "James Nelson", email: "james@a.com" }
+		nock('https://private-1bd9e-contacts40.apiary-mock.com')
+			.post('/contacts/123', contact)
+			.reply(200);
+
+		const contactFormController = mount(React.createElement(ContactFormController, {contacts: [], httpClient: request}))
+
+		fillForm(contactFormController, "James Nelson", "james@a.com")
+		submitForm(contactFormController)
+
+		setTimeout(() => {
+			try {
+				expect(contactFormController).to.contain.text("james@a.comadawdawdwadwa");
+			} catch (err) {
+				fail(err);
+			}
+			done();
+		}, 10);
+
+	});
+
+	function fillForm(formController, name, email) {
+		formController.find('input').at(0)
+			.simulate('change', {target: {value: name}})
+
+		formController.find('input').at(1)
+			.simulate('change', {target: {value: email}})
+	}
+
+	function submitForm(formController) {
+		formController.find('button').simulate('click')
+	}
+
 });
