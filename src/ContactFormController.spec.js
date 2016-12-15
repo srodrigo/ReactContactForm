@@ -14,9 +14,8 @@ describe('ContactFormController', () => {
 	var httpClient;
 
 	beforeEach(function() {
-		httpClient = {
-			post: sinon.spy()
-		}
+		httpClient = function() {};
+		httpClient.post =	sinon.spy();
 	});
 
 	it('renders ContactForm', () => {
@@ -51,7 +50,7 @@ describe('ContactFormController', () => {
 		fillForm(contactFormController, "joan", "john@a.com")
 		submitForm(contactFormController)
 
-		const contact = { description: "", email: "john@a.com", name: "joan" }
+		const contact = {description: "", email: "john@a.com", name: "joan" }
 		var expected = {
 			url : 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123',
 			form: contact
@@ -73,7 +72,7 @@ describe('ContactFormController', () => {
 
 		setTimeout(() => {
 			try {
-				expect(contactFormController).to.contain.text("james@a.comadawdawdwadwa");
+				expect(contactFormController).to.contain.text("james@a.com");
 			} catch (err) {
 				fail(err);
 			}

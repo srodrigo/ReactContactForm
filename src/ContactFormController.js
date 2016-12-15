@@ -6,7 +6,7 @@ export const ContactFormController = React.createClass({
 
   propTypes: {
     contacts: React.PropTypes.array.isRequired,
-    httpClient: React.PropTypes.object.isRequired
+    httpClient: React.PropTypes.func.isRequired
   },
 
   handleSubmit: saveContact,
@@ -25,7 +25,6 @@ export const ContactFormController = React.createClass({
     )
   },
 })
-
 
 const contactsElements = function(contacts) {
   return contacts
@@ -55,7 +54,8 @@ const saveContact = function(formData) {
 			},
 			function (error, response, body) {
 				if (!error && response.statusCode == 200) {
-					const contacts = $this.state.contacts
+					const contacts = $this.state.contacts;
+          formData.key = contacts.length + 1;
 					contacts.push(formData)
 					$this.setState({contacts})
 				}
