@@ -2,10 +2,11 @@ import React from 'react'
 import { ContactItem } from './ContactItem'
 import { ContactForm } from './ContactForm'
 
+const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
+
 export const ContactFormController = React.createClass({
 
   propTypes: {
-    contacts: React.PropTypes.array.isRequired,
     httpClient: React.PropTypes.func.isRequired
   },
 
@@ -13,7 +14,7 @@ export const ContactFormController = React.createClass({
 
   getInitialState () {
     return {
-      contacts: this.props.contacts
+      contacts: init(this)
     }
   },
 
@@ -25,6 +26,21 @@ export const ContactFormController = React.createClass({
     )
   },
 })
+
+const init = function(this12) {
+
+  const httpClient = this12.props.httpClient;
+  const $this = this12;
+
+  httpClient(url, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      $this.setState({
+        contacts: JSON.parse(body)
+      });
+    }
+  });
+  return []
+}
 
 const contactsElements = function(contacts) {
   return contacts
@@ -46,10 +62,10 @@ const saveContact = function(formData) {
 	var httpClient = this.props.httpClient;
 	var $this = this;
 
-	function makeRequest(urlData) {
+	function makeRequest() {
 		httpClient.post(
 			{ 
-				url: urlData,
+				url: url,
 				form: formData 
 			},
 			function (error, response, body) {
@@ -62,7 +78,6 @@ const saveContact = function(formData) {
 			});
 	}
 
-	const url = 'https://private-1bd9e-contacts40.apiary-mock.com/contacts/123';
-	makeRequest(url)
+	makeRequest()
 
 }

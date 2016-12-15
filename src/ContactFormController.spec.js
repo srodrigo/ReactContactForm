@@ -16,26 +16,45 @@ describe('ContactFormController', () => {
 	beforeEach(function() {
 		httpClient = function() {};
 		httpClient.post =	sinon.spy();
+    httpClient.get = sinon.spy();
 	});
 
-	it('renders ContactForm', () => {
+	it.only('renders ContactForm', (done) => {
 		const contacts = [
 			{key: 1, name: "James Nelson", email: "james@jamesknelson.com", description: 'Big guy'},
 			{key: 2, name: "Bob"},
 			{key: 3, name: "Alice", email: "alice.in.wonderland@whatever.com", description: 'Nice person'}
 		]
-		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
 
-		expect(contactFormController).to.contain.text("james@jamesknelson.com")
-		expect(contactFormController).to.contain.text("alice.in.wonderland@whatever.com")
-	});
+    nock('https://private-1bd9e-contacts40.apiary-mock.com')
+      .get('/contacts/123')
+      .reply(200, contacts);
+
+    const contactFormController = mount(React.createElement(ContactFormController, {httpClient: request}))
+
+    setTimeout(() => {
+      try {
+        expect(contactFormController).to.contain.text("james@jamesknelson.com")
+        expect(contactFormController).to.contain.text("alice.in.wonderland@whatever.com")
+      } catch (err) {
+        done.fail(err);
+      }
+      done();
+    }, 5);
+
+  });
 
 	it('does not show emails "@example.com"', () => {
 		const contacts = [
 			{key: 1, name: "James Nelson", email: "james@a.com"},
 			{key: 2, name: "Bob", email: "bob@example.com"}
 		]
-		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
+
+    nock('https://private-1bd9e-contacts40.apiary-mock.com')
+      .get('/contacts/123/')
+      .reply(200, contacts);
+
+		const contactFormController = mount(React.createElement(ContactFormController, {httpClient: httpClient}))
 
 		expect(contactFormController).to.contain.text("james@a.com")
 		expect(contactFormController).to.not.contain.text("bob@example.com")
@@ -45,7 +64,12 @@ describe('ContactFormController', () => {
 		const contacts = [
 			{key: 1, name: "James Nelson", email: "james@a.com"}
 		]
-		const contactFormController = mount(React.createElement(ContactFormController, {contacts: contacts, httpClient: httpClient}))
+
+     nock('https://private-1bd9e-contacts40.apiary-mock.com')
+      .get('/contacts/123/')
+      .reply(200, contacts);
+
+		const contactFormController = mount(React.createElement(ContactFormController, {httpClient: httpClient}))
 
 		fillForm(contactFormController, "joan", "john@a.com")
 		submitForm(contactFormController)
@@ -65,7 +89,7 @@ describe('ContactFormController', () => {
 			.post('/contacts/123', contact)
 			.reply(200);
 
-		const contactFormController = mount(React.createElement(ContactFormController, {contacts: [], httpClient: request}))
+		const contactFormController = mount(React.createElement(ContactFormController, {httpClient: request}))
 
 		fillForm(contactFormController, "James Nelson", "james@a.com")
 		submitForm(contactFormController)
@@ -80,6 +104,20 @@ describe('ContactFormController', () => {
 		}, 10);
 
 	});
+
+  it('get the contact list from the backend on startup', (done) => {
+    nock('https://private-1bd9e-contacts40.apiary-mock.com')
+      .get('/contacts/123/')
+      .reply(200, [
+        {name: "James Nelson 1", description: 'Hola soy James 1', email: "james1@a.com"} ,
+        {name: "James Nelson 2", description: 'Hola soy James 2', email: "james2@a.com"}
+      ]);
+
+    const contactFormController = mount(React.createElement(ContactFormController, {httpClient: httpClient}))
+
+    expect(contactFormController).to.contain.text("james1@a.com")
+    expect(contactFormController).to.contain.text("james2@a.com")
+  });
 
 	function fillForm(formController, name, email) {
 		formController.find('input').at(0)
