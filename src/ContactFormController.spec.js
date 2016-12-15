@@ -60,7 +60,7 @@ describe('ContactFormController', () => {
 	});
 
 	it('adds the contact to the list when submitting a new contact response is successful', (done) => {
-		const contact = { name: "James Nelson", email: "james@a.com" }
+		const contact = {name: "James Nelson", email: "james@a.com"}
 		nock('https://private-1bd9e-contacts40.apiary-mock.com')
 			.post('/contacts/123', contact)
 			.reply(200);
